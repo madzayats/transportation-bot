@@ -1,5 +1,6 @@
 import logging
 import os
+from random import randint
 
 from aiogram import Bot, Dispatcher, executor, types
 from menu import *
@@ -7,10 +8,8 @@ from menu import *
 bot_token = os.getenv('bot_token')
 API_TOKEN = bot_token
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
@@ -40,6 +39,12 @@ async def call_faq(message: types.Message):
                                                  f"Да, есть от 1 до 3 дней\n\n"
                                                  f"🆘Больше информации на нашем сайте Грузики.РФ🆘",reply_markup=call_support)
 
+@dp.callback_query_handler(lambda c: c.data == 'call_support')
+async def process_callback_button1(callback_query: types.CallbackQuery):
+    await bot.send_message(-714795919, "Обращение №")
+    await bot.answer_callback_query(callback_query.id)
+    await bot.send_message(callback_query.from_user.id, 'Ваше сообщение успешно отправлено в техническую поддержку')
+
 
 @dp.message_handler(text="Адреса и режим работы")
 async def working_mode(message: types.Message):
@@ -54,8 +59,7 @@ async def working_mode(message: types.Message):
                                                  '📍Компания: Грузики.РФ\n'
                                                  'Улица Арбатская, дом 8\n'
                                                  'Будние дни: с 7:00 до 19:00\n'
-                                                 'Выходные дни: с 8:00 до 15:00'
-                           )
+                                                 'Выходные дни: с 8:00 до 15:00')
 
 
 def register_handlers_client(dp: Dispatcher):
